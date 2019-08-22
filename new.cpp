@@ -1,17 +1,20 @@
 #include <string>
 #include <iostream>
+#include <fstream>
 
 using namespace std;
 
 //Global konstant
 const int MAX_KOMPISAR = 6;
 
+const int MAX_PERSONER = 10;
+
 //Den statiska arrayen kompisar har storleken MAX_KOMPISAR med ant_kompisar st element inlagda. MAX_KOMPISAR kan vara en global konstant.
 
 
 //Den statiska arrayen trans är av storlek MAX_TRANSAKTIONER och har antalTrans st element inlagda.
 // MAX_TRANSAKTIONER kan vara en global konstant.
-const int MAX_TRANSAKTIONER = 10; // TODO: I dont know what this number is supposed to be
+const int MAX_TRANSAKTIONER = 30; // TODO: I dont know what this number is supposed to be
 
 class Transaktion
 {
@@ -76,8 +79,17 @@ int skriv_meny() {
 
 int main()
 {
-  //TransaktionsLista l = TransaktionsLista(); // <<<----- HELP ME I'm dumb
   TransaktionsLista l;
+
+  ifstream ifs ("resa.txt", std::ifstream::in);
+
+  if(!ifs.is_open()) {
+    // TODO: translate
+    cout << "Invalid file" << endl;
+    return 0;
+  }
+
+  l.laesin(ifs);
 
   while(true) {
     switch(skriv_meny()) {
@@ -180,19 +192,18 @@ void TransaktionsLista::laesin( istream & is )
   // requires some bogus entries since the first fields take string values and
   // therefore match any input. At the belopp field we can finally trigger a
   // failure to exit.
-    while (!is.eof() && is.good())
-    {
-        cout << "read transaction" << endl;
-        Transaktion t;
-        bool ok = t.laesEnTrans(is);
+  while (!is.eof() && is.good())
+  {
+      Transaktion t;
+      bool ok = t.laesEnTrans(is);
 
-        if (ok)
-        {
-            cout << "we got one";
-            trans[antalTrans] = t;
-            antalTrans++;
-        }
-    }
+      if (ok)
+      {
+          cout << "just read transaction " << antalTrans << endl;
+          trans[antalTrans] = t;
+          antalTrans++;
+      }
+  }
 }
 
 void TransaktionsLista::skrivut( ostream & os )
