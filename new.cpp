@@ -41,6 +41,35 @@ public:
 //    ...eventuellt div. annat...
 };
 
+class Person
+{
+  private:
+    string namn;
+    double betalat_andras;
+    double skyldig;
+  public:
+    Person() {};
+    Person(string n, double b, double s);
+    double haemta_betalat();
+    double haemta_skyldig();
+    void skrivUt();
+};
+
+class PersonLista
+{
+  private:
+    int antal_pers;
+    Person pers[MAX_PERSONER];
+  public:
+    PersonLista() {};
+    ~PersonLista() {};
+    void laggTillEn(Person pny);
+    void skrivUtOchFixa();
+    double summaSkyldig();
+    double summaBetalat();
+    bool finnsPerson(const string& namn);
+};
+
 class TransaktionsLista
 {
   private:
