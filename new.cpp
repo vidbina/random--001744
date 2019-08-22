@@ -2,8 +2,8 @@
 #include <iostream>
 #include <fstream>
 
-// Options 1 through 4 implemented (more or less :P)
-// Handling aerSkyldig for menu option 5
+// Options 1 through 5 implemented (more or less :P)
+// Screwing up on case 6, find the comments in the code l165
 
 using namespace std;
 
@@ -19,28 +19,7 @@ const int MAX_PERSONER = 10;
 // MAX_TRANSAKTIONER kan vara en global konstant.
 const int MAX_TRANSAKTIONER = 30; // TODO: I dont know what this number is supposed to be
 
-class Transaktion
-{
-private:
-    string datum;
-    string typ;
-    string namn;
-    double belopp;
-    int ant_kompisar;
-    string kompisar[MAX_KOMPISAR];
-    
-public:
-    Transaktion(){}
-    ~Transaktion(){}
-    string haemta_namn();
-    double haemta_belopp();
-    int haemta_ant_kompisar();
-    bool finnsKompis( string namnet );
-    bool laesEnTrans( istream &is );
-    void skrivEnTrans( ostream &os );
-//    ...eventuellt div. annat...
-};
-
+// Weird design
 class Person
 {
   private:
@@ -70,6 +49,29 @@ class PersonLista
     bool finnsPerson(const string& namn);
 };
 
+class Transaktion
+{
+private:
+    string datum;
+    string typ;
+    string namn;
+    double belopp;
+    int ant_kompisar;
+    string kompisar[MAX_KOMPISAR];
+    
+public:
+    Transaktion(){}
+    ~Transaktion(){}
+    string haemta_namn();
+    string haemta_kompisar_namn(int id);
+    double haemta_belopp();
+    int haemta_ant_kompisar();
+    bool finnsKompis( string namnet );
+    bool laesEnTrans( istream &is );
+    void skrivEnTrans( ostream &os );
+//    ...eventuellt div. annat...
+};
+
 class TransaktionsLista
 {
   private:
@@ -85,6 +87,8 @@ class TransaktionsLista
     double totalkostnad();
     double liggerUteMed( string namnet );
     double aerSkyldig( string namnet );
+    int length();
+    Transaktion get(int id);
     //PersonLista FixaPersoner(); // TODO: PersonLista isn't a defined class, it needs to be created or the return typ needs to be changed
      //...eventuellt div. annat...
 };
@@ -101,6 +105,12 @@ int skriv_meny() {
   cout << "5. Hur mycket ligger en viss person ute med?" << endl;
   cout << "6. Lista alla personer mm och FIXA!!!" << endl;
 
+  if(!cin.good()) {
+    cout << "fix" << endl;
+    cin.clear();
+    return 100; // trigger the default case
+  }
+
   cin >> choice;
 
   return choice;
@@ -112,6 +122,7 @@ int skriv_meny() {
 int main()
 {
   TransaktionsLista tl;
+  PersonLista pl;
 
   string namnet;
 
@@ -124,6 +135,10 @@ int main()
   }
 
   tl.laesin(ifs);
+  // Weird design, there is no person or personlist until this point. So I
+  // guess we'll have to traverse the transactionlist and populate the person
+  // list and there has been no instruction to pass the list point along to the
+  // tf methods in order to automatically populate it.
 
   while(true) {
     // TODO: Translate
@@ -147,6 +162,47 @@ int main()
         cout << "Enter the name of the person" << endl;
         cin >> namnet;
         cout << namnet << " has to pay " << tl.aerSkyldig(namnet) << " into the pot" << endl;
+      case 6:
+        // DISCLAIMER: This will be sloppy, I will basically walk through the
+        // transaction list and for every name that I encounter, of the
+        // transaction owner and then the other folks listed on that
+        // transaction, perform a laggTillEn call with aerSkyldig and
+        // liggerUteMed on those names. I make the assumption that if I were to
+        // call aeSkyldig and liggerUteMed on any name multiple times the
+        // output values would be the same since the list doesn't change. In an
+        // ideal world, I would have kept track of every name that I have
+        // encountered so far, but my brain is not digging it.
+        
+        // TODO: DEBUG THIS UNHOLY MESS
+
+        // get a list of all names in the transaction list
+        cout << "A" << endl;
+        for(int i = 0; i < tl.length(); i++) { // for every index in the list
+          // get the name of the owner
+          string owner = tl.get(i).haemta_namn();
+          // and add the owner's record to the person list if not already there
+          cout << "b" << endl;
+          if(!pl.finnsPerson(owner)) {
+            pl.laggTillEn(Person(owner, tl.aerSkyldig(owner), tl.liggerUteMed(owner)));
+          }
+
+          cout << "c" << endl;
+          // get the name of all the leaches on this transactions
+          for (int j = 0; j < tl.get(i).haemta_ant_kompisar(); j++) {
+            // for every other person listed on the transaction ⇒ to something
+            cout << "d" << endl;
+            string leach_name = tl.get(i).haemta_kompisar_namn(j);
+            cout << "e" << endl;
+            if(!pl.finnsPerson(leach_name)) {
+              cout << "f" << endl;
+              pl.laggTillEn(Person(leach_name, tl.aerSkyldig(leach_name), tl.liggerUteMed(leach_name)));
+              cout << "g" << endl;
+            }
+          }
+        }
+        cout << "FIN" << endl;
+
+        pl.skrivUtOchFixa();
       default:
         cout << "WIP" << endl;
     }
@@ -168,6 +224,13 @@ int main()
 string Transaktion::haemta_namn()
 {
     return namn;
+}
+
+string Transaktion::haemta_kompisar_namn(int id)
+{
+  if(id < MAX_KOMPISAR) {
+    return kompisar[id];
+  }
 }
 
 int Transaktion::haemta_ant_kompisar()
@@ -249,8 +312,7 @@ void TransaktionsLista::laesin( istream & is )
       if (ok)
       {
           cout << "just read transaction " << antalTrans << endl;
-          trans[antalTrans] = t;
-          antalTrans++;
+          laggTill(t);
       }
   }
 }
@@ -261,6 +323,13 @@ void TransaktionsLista::skrivut( ostream & os )
     {
         trans[i].skrivEnTrans(os);
     }
+}
+void TransaktionsLista::laggTill( Transaktion & t ) {
+  // NOTE: Perhaps we should refrain from possibly overwriting a position that
+  // is already populated and perform some sanity checks on t
+  trans[antalTrans] = t;
+  // NOTE: Perhaps we should check that we're not at our max yet
+  antalTrans++;
 }
 
 double TransaktionsLista::totalkostnad() {
@@ -304,4 +373,51 @@ double TransaktionsLista::aerSkyldig(string namnet) {
   }
 
   return sum;
+}
+
+int TransaktionsLista::length() {
+  // NOTE: Kind of messy, when we have as many items as the max size at which
+  // this array is declared, we'll have some discrepancies
+  return antalTrans-1;
+}
+
+Transaktion TransaktionsLista::get(int id) {
+  if(id < MAX_TRANSAKTIONER) {
+    return trans[id];
+  }
+}
+
+Person::Person(string n, double b, double s) {
+  namn = n;
+  betalat_andras = b;
+  skyldig = s;
+}
+
+void Person::skrivUt() {
+  cout << "Something sensible about "<< namn << endl;
+}
+
+void PersonLista::laggTillEn(Person pny) {
+  // See notes for TransaktionsLista::lagTill :facepalm:
+  pers[antal_pers] = pny;
+  antal_pers++;
+}
+
+void PersonLista::skrivUtOchFixa() {
+  for(int i = 0; i < antal_pers; i++) {
+    // TODO: Too tired now
+    pers[i].skrivUt();
+  }
+}
+
+double PersonLista::summaSkyldig() {
+  return 0;
+}
+
+double PersonLista::summaBetalat() {
+  return 0;
+}
+
+bool PersonLista::finnsPerson(const string& namn) {
+  return false;
 }
