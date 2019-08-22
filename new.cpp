@@ -2,8 +2,19 @@
 #include <iostream>
 #include <fstream>
 
-// Options 1 through 5 implemented (more or less :P)
-// Screwing up on case 6, find the comments in the code l165
+// Option 0: we don't yet save to the file.
+//
+// Option 1: kind of works but we have no way of breaking out of the input loop
+// since it just keeps on matching until cin.good fails. For example if you
+// manually enter "a a a a" where the 4th token should be belopp, the cin fails
+// and that is the way things break out of the loop. I don't know how to send
+// an EOF sig from the keyboard but perhaps something like a Ctrl-C catch could
+// be the answer here in breaking out of the user entry mode. Just thought of
+// it :facepalm:.
+//
+// Options 2 through 5 implemented (more or less :P)
+//
+// Option 6: find the comments in the code l165 pretty messy now
 
 using namespace std;
 
