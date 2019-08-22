@@ -2,6 +2,9 @@
 #include <iostream>
 #include <fstream>
 
+// Options 1 through 4 implemented (more or less :P)
+// Handling aerSkyldig for menu option 5
+
 using namespace std;
 
 //Global konstant
@@ -81,6 +84,8 @@ int main()
 {
   TransaktionsLista l;
 
+  string namnet;
+
   ifstream ifs ("resa.txt", std::ifstream::in);
 
   if(!ifs.is_open()) {
@@ -104,6 +109,11 @@ int main()
         l.skrivut(cout);
       case 3:
         cout << "Total costs are: " << l.totalkostnad() << endl;
+      case 4:
+        // TODO: check, but not really because its a string anyways
+        cout << "Enter the name of the person" << endl;
+        cin >> namnet;
+        cout << namnet << " is receiving " << l.liggerUteMed(namnet) << " from the pot" << endl;
       default:
         cout << "WIP" << endl;
     }
@@ -225,6 +235,35 @@ double TransaktionsLista::totalkostnad() {
 
   for (int i = 0; i < antalTrans -1; i++) {
     sum = sum + trans[i].haemta_belopp();
+  }
+
+  return sum;
+}
+
+double TransaktionsLista::liggerUteMed(string namnet) {
+  double sum = 0;
+
+  for (int i = 0; i < antalTrans -1; i++) {
+    if(trans[i].haemta_namn() == namnet) {
+      // this is a transaction that I added so I paid
+      double transaction_cost = trans[i].haemta_belopp();
+      double friends_count = trans[i].haemta_ant_kompisar();
+      double share_to_be_received = friends_count/(friends_count+1);
+
+      // TODO: Translate
+      //cout << namnet << " paid for transaction " << i << " and shared it with " << friends_count << " friends and has to receive " << share_to_be_received << " of the total cost of " << transaction_cost << endl;
+      sum = sum + transaction_cost*share_to_be_received;
+    }
+  }
+
+  return sum;
+}
+
+double TransaktionsLista::aerSkyldig(string namnet) {
+  double sum = 0;
+
+  for (int i = 0; i < antalTrans -1; i++) {
+    //sum = sum + trans[i].;
   }
 
   return sum;
