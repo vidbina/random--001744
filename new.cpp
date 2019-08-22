@@ -114,6 +114,10 @@ int main()
         cout << "Enter the name of the person" << endl;
         cin >> namnet;
         cout << namnet << " is receiving " << l.liggerUteMed(namnet) << " from the pot" << endl;
+      case 5:
+        cout << "Enter the name of the person" << endl;
+        cin >> namnet;
+        cout << namnet << " has to pay " << l.aerSkyldig(namnet) << " into the pot" << endl;
       default:
         cout << "WIP" << endl;
     }
@@ -250,8 +254,6 @@ double TransaktionsLista::liggerUteMed(string namnet) {
       double friends_count = trans[i].haemta_ant_kompisar();
       double share_to_be_received = friends_count/(friends_count+1);
 
-      // TODO: Translate
-      //cout << namnet << " paid for transaction " << i << " and shared it with " << friends_count << " friends and has to receive " << share_to_be_received << " of the total cost of " << transaction_cost << endl;
       sum = sum + transaction_cost*share_to_be_received;
     }
   }
@@ -263,7 +265,13 @@ double TransaktionsLista::aerSkyldig(string namnet) {
   double sum = 0;
 
   for (int i = 0; i < antalTrans -1; i++) {
-    //sum = sum + trans[i].;
+    if(trans[i].finnsKompis(namnet)) {
+      double transaction_cost = trans[i].haemta_belopp();
+      double friends_count = trans[i].haemta_ant_kompisar();
+      double share_to_pay = 1/(friends_count+1);
+
+      sum = sum + transaction_cost*share_to_pay;
+    }
   }
 
   return sum;
