@@ -111,7 +111,7 @@ int skriv_meny() {
 
 int main()
 {
-  TransaktionsLista l;
+  TransaktionsLista tl;
 
   string namnet;
 
@@ -123,7 +123,7 @@ int main()
     return 0;
   }
 
-  l.laesin(ifs);
+  tl.laesin(ifs);
 
   while(true) {
     // TODO: Translate
@@ -133,20 +133,20 @@ int main()
         return 0;
       case 1:
         cout << "datum typ namn belopp ant_kompisar kompisar*" << endl;
-        l.laesin(cin);
+        tl.laesin(cin);
       case 2:
-        l.skrivut(cout);
+        tl.skrivut(cout);
       case 3:
-        cout << "Total costs are: " << l.totalkostnad() << endl;
+        cout << "Total costs are: " << tl.totalkostnad() << endl;
       case 4:
         // TODO: check, but not really because its a string anyways
         cout << "Enter the name of the person" << endl;
         cin >> namnet;
-        cout << namnet << " is receiving " << l.liggerUteMed(namnet) << " from the pot" << endl;
+        cout << namnet << " is receiving " << tl.liggerUteMed(namnet) << " from the pot" << endl;
       case 5:
         cout << "Enter the name of the person" << endl;
         cin >> namnet;
-        cout << namnet << " has to pay " << l.aerSkyldig(namnet) << " into the pot" << endl;
+        cout << namnet << " has to pay " << tl.aerSkyldig(namnet) << " into the pot" << endl;
       default:
         cout << "WIP" << endl;
     }
