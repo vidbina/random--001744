@@ -99,6 +99,8 @@ int main()
       case 1:
         cout << "datum typ namn belopp ant_kompisar kompisar*" << endl;
         l.laesin(cin);
+      case 2:
+        l.skrivut(cout);
       default:
         cout << "WIP" << endl;
     }
@@ -152,15 +154,16 @@ void Transaktion::skrivEnTrans( ostream &os )
 {
 // In this method you want to write all of the attributes of Transaction ( datum, belopp, etc)
 // the order of these items being written has to be the same as the order they are being read in laesEnTrans
-  os << datum; // An example
+  os << "Datum: " << datum << endl; // An example
     // TODO: Not sure if we need to print a space of something between each variable, like "os << datum << " ";
-  os << typ;
-  os << namn;
-  os << belopp;
-  os << ant_kompisar;
+  os << "Typ: " << typ << endl;
+  os << "Namn: " << namn << endl;
+  os << "Belopp: " << belopp << endl;
+  os << "Ant kompisar: " << ant_kompisar << endl;
   for(int i = 0; i<ant_kompisar; i++) {
-    os << kompisar[i];
+    os << "  Kompisar " << i << " " << kompisar[i] << endl;
   }
+  os << endl;
 }
 
 //Metoden laesEnTrans läser data om en transaktion (kvitto) från tangentbord eller en fil. Denna är av typen bool, eftersom den kan komma att anropas från klassen TransaktionsLista:s metod laesin med en loop av typen
@@ -208,7 +211,7 @@ void TransaktionsLista::laesin( istream & is )
 
 void TransaktionsLista::skrivut( ostream & os )
 {
-    for (int i = 0; i < antalTrans; i++)
+    for (int i = 0; i < antalTrans-1; i++)
     {
         trans[i].skrivEnTrans(os);
     }
