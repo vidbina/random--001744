@@ -37,13 +37,13 @@ public:
 
 class TransaktionsLista
 {
-    private:
+  private:
     Transaktion trans[MAX_TRANSAKTIONER];
     int antalTrans = 0;
 
-    public:
-    TransaktionsLista();
-    ~TransaktionsLista();
+  public:
+    TransaktionsLista() {};
+    ~TransaktionsLista() {};
     void laesin( istream & is );
     void skrivut( ostream & os );
     void laggTill( Transaktion & t );
@@ -76,13 +76,17 @@ int skriv_meny() {
 
 int main()
 {
-  TransaktionsLista list();
+  //TransaktionsLista l = TransaktionsLista(); // <<<----- HELP ME I'm dumb
+  TransaktionsLista l;
 
   while(true) {
     switch(skriv_meny()) {
       case 0:
         // TODO: save to file and exit
-        return(0);
+        return 0;
+      case 1:
+        cout << "datum typ namn belopp ant_kompisar kompisar*" << endl;
+        l.laesin(cin);
       default:
         cout << "WIP" << endl;
     }
@@ -136,73 +140,55 @@ void Transaktion::skrivEnTrans( ostream &os )
 {
 // In this method you want to write all of the attributes of Transaction ( datum, belopp, etc)
 // the order of these items being written has to be the same as the order they are being read in laesEnTrans
-
-/*
-    string datum;
-    string typ;
-    string namn;
-    double belopp;
-    int ant_kompisar;
-    string kompisar[MAX_KOMPISAR];
-*/
-
+  os << datum; // An example
+    // TODO: Not sure if we need to print a space of something between each variable, like "os << datum << " ";
+  os << typ;
+  os << namn;
+  os << belopp;
+  os << ant_kompisar;
+  for(int i = 0; i<ant_kompisar; i++) {
+    os << kompisar[i];
+  }
 }
 
 //Metoden laesEnTrans läser data om en transaktion (kvitto) från tangentbord eller en fil. Denna är av typen bool, eftersom den kan komma att anropas från klassen TransaktionsLista:s metod laesin med en loop av typen
 
 bool Transaktion::laesEnTrans( istream &is )
 {
-// In this method you want to write all of the attributes of Transaction ( datum, belopp, etc)
-// this function should be able to create transactions from the text that is provided by is
+    // TODO: Before reading from is, make sure it has data
+    if(!is.good()) { return false; }
 
+    is >> datum >> typ >> namn >> belopp >> ant_kompisar;
 
-    if(!is) // Om vi inte kan läsa från is
-    {
-        return false;
+    for(int i = 0; i < ant_kompisar; i++) {
+      is >> kompisar[i];
     }
-    
-    // Before reading from is, make sure it has data
-    is >> datum; // An example
 
-// Pay exrta attention to "is" having data when reading from it.
-// All of the data needs to go into the attributes for this object
-
-/*    
-    string datum;
-    string typ;
-    string namn;
-    double belopp;
-    int ant_kompisar;
-    string kompisar[MAX_KOMPISAR];
-*/
+    if(!cin.good()) {
+      return false;
+    }
 
     return true;
 }
      
-
-     
-     
 //Metoderna laesin och skrivut läser in värden till ett TransaktionsLista-objekt från/till fil eller tangentbord/skärm. Använder sig av inläsnings- och utskriftsmetoder i klassen Transaktion.     
 void TransaktionsLista::laesin( istream & is )
 {
-  // TODO: translate
-  cout << "Enter your transaction date";
-  cout << "Enter your transaction type";
-  cout << "Enter your transaction name";
-  cout << "Enter your transaction value";
-  cout << "Enter your transaction participant count";
-  cout << "Enter your transaction name of person x";
-
-  // TODO: sanity check all input values
-  // perhaps even while you are collecting them ;)
-
-  //trans[antalTrans] = Transaction
-    while (true)
+  // How do we handle menu like flows and file flows. For option 1, we need to
+  // enter text through the keyboard. When do we break out of this, now the
+  // flow breaks when an invalid entry is encountered, but that sometimes
+  // requires some bogus entries since the first fields take string values and
+  // therefore match any input. At the belopp field we can finally trigger a
+  // failure to exit.
+    while (!is.eof() && is.good())
     {
+        cout << "read transaction" << endl;
         Transaktion t;
         bool ok = t.laesEnTrans(is);
+
         if (ok)
         {
+            cout << "we got one";
             trans[antalTrans] = t;
             antalTrans++;
         }
