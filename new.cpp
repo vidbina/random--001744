@@ -92,6 +92,7 @@ int main()
   l.laesin(ifs);
 
   while(true) {
+    // TODO: Translate
     switch(skriv_meny()) {
       case 0:
         // TODO: save to file and exit
@@ -101,6 +102,8 @@ int main()
         l.laesin(cin);
       case 2:
         l.skrivut(cout);
+      case 3:
+        cout << "Total costs are: " << l.totalkostnad() << endl;
       default:
         cout << "WIP" << endl;
     }
@@ -215,4 +218,14 @@ void TransaktionsLista::skrivut( ostream & os )
     {
         trans[i].skrivEnTrans(os);
     }
+}
+
+double TransaktionsLista::totalkostnad() {
+  double sum = 0;
+
+  for (int i = 0; i < antalTrans -1; i++) {
+    sum = sum + trans[i].haemta_belopp();
+  }
+
+  return sum;
 }
